@@ -17,20 +17,18 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      await register(
-        formData.email,
-        formData.password,
-        formData.name,
-        formData.role
-      );
-      navigate("/login");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  e.preventDefault();
+  try {
+    const response = await axios.post('/auth/register', {
+      name,
+      email,
+      password,
+    });
+    console.log('Registered:', response.data);
+  } catch (error) {
+    console.error('Registration error:', error.response?.data || error.message);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">

@@ -12,12 +12,14 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      navigate("/dashboard");
-    } catch (err) {
-      setError(err.message);
+      const response = await axios.post('/auth/login', { email, password });
+      console.log('Login success:', response.data);
+      // Save token or redirect
+    } catch (error) {
+      console.error('Login failed:', error.response?.data || error.message);
     }
   };
+
 
   const handleGoogleLogin = async () => {
     try {
