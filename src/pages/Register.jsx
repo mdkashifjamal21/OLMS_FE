@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import axios from "../api/axios"; // Adjust the import path as necessary
 
 const Register = () => {
   const { register } = useAuth();
@@ -20,9 +21,9 @@ const Register = () => {
   e.preventDefault();
   try {
     const response = await axios.post('/auth/register', {
-      name,
-      email,
-      password,
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
     });
     console.log('Registered:', response.data);
   } catch (error) {

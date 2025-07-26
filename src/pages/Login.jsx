@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import axios from "../api/axios"; // Adjust the import path as necessary
 
 const Login = () => {
   const { login, googleLogin } = useAuth();
