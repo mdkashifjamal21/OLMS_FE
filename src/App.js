@@ -25,26 +25,23 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
-        {/* ✅ Protected route for any logged-in user */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <UserDashboard />
-            </ProtectedRoute>
-          }
-        />
+       <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={["admin", "student"]}>
+      <UserDashboard />
+    </ProtectedRoute>
+  }
+/>
 
-        {/* ✅ AdminDashboard now accessible to all logged-in users */}
-        <Route
-          path="/admin-dashboard"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-
+<Route
+  path="/admin-dashboard"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <AdminDashboard />
+    </ProtectedRoute>
+  }
+/>
         {/* ✅ Unauthorized fallback */}
         <Route
           path="/unauthorized"

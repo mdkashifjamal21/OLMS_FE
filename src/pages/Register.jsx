@@ -16,16 +16,17 @@ const Register = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
- const handleRegister = async (e) => {
+const handleRegister = async (e) => {
   e.preventDefault();
   try {
-    await register(formData); // from useAuth
+    const response = await register(formData);
+    alert("Registration successful. Please log in.");
+    navigate("/login");
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);
     setError("Registration failed.");
   }
 };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">

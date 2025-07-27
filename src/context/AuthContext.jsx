@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, provider } from "../firebaseConfig";
@@ -14,16 +15,19 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
+  // ✅ Sync Firebase auth and localStorage user
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       const localUser = JSON.parse(localStorage.getItem("olmsUser"));
-      if (user && localUser) {
+
+      if (firebaseUser && localUser) {
         const fullUser = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || localUser.name || "",
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName || localUser.name || "",
           role: localUser.role || "student",
-          photoURL: user.photoURL || "",
+          photoURL: firebaseUser.photoURL || "",
+          token: localStorage.getItem("olmsToken") || "",
         };
         setCurrentUser(fullUser);
       } else {
@@ -34,59 +38,85 @@ export const AuthProvider = ({ children }) => {
     return () => unsub();
   }, []);
 
+  // ✅ Login with backend
   const login = async (email, password) => {
-    const response = await loginUser({ email, password });
-    const { token, user } = response.data;
+    try {
+      const response = await loginUser({ email, password });
+      const { token, user } = response.data;
 
-    localStorage.setItem("olmsToken", token);
-    localStorage.setItem("olmsUser", JSON.stringify(user));
-    setCurrentUser(user);
+      localStorage.setItem("olmsToken", token);
+      localStorage.setItem("olmsUser", JSON.stringify(user));
+      setCurrentUser(user);
 
-    redirectByRole(user.role);
+      redirectByRole(user.role);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   };
 
+  // ✅ Register with backend
   const register = async ({ name, email, password, role }) => {
-    const response = await registerUser({ name, email, password, role });
-    const { token, user } = response.data;
+    try {
+      const response = await registerUser({ name, email, password, role });
+      const { token, user } = response.data;
 
-    localStorage.setItem("olmsToken", token);
-    localStorage.setItem("olmsUser", JSON.stringify(user));
-    setCurrentUser(user);
+      localStorage.setItem("olmsToken", token);
+      localStorage.setItem("olmsUser", JSON.stringify(user));
+      setCurrentUser(user);
 
-    redirectByRole(user.role);
+      redirectByRole(user.role);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
+    }
   };
 
+  // ✅ Google login via Firebase
   const googleLogin = async () => {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
 
-    const localUser = JSON.parse(localStorage.getItem("olmsUser"));
-    const fullUser = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      role: localUser?.role || "student",
-      photoURL: user.photoURL,
-    };
+      const localUser = JSON.parse(localStorage.getItem("olmsUser")) || {};
+      const fullUser = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        role: localUser.role || "student",
+        photoURL: firebaseUser.photoURL,
+        token: localStorage.getItem("olmsToken") || "",
+      };
 
-    setCurrentUser(fullUser);
-    localStorage.setItem("olmsUser", JSON.stringify(fullUser));
+      localStorage.setItem("olmsUser", JSON.stringify(fullUser));
+      setCurrentUser(fullUser);
 
-    redirectByRole(fullUser.role);
+      redirectByRole(fullUser.role);
+    } catch (error) {
+      console.error("Google login failed:", error);
+      throw error;
+    }
   };
 
+  // ✅ Logout
   const logout = async () => {
-    await signOut(auth);
-    setCurrentUser(null);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.warn("Firebase signOut failed:", error);
+    }
+
     localStorage.removeItem("olmsUser");
     localStorage.removeItem("olmsToken");
+    setCurrentUser(null);
     navigate("/login");
   };
 
+  // ✅ Role-based redirection
   const redirectByRole = (role) => {
     switch (role) {
       case "admin":
-        navigate("/admin");
+        navigate("/admin-dashboard");
         break;
       case "librarian":
         navigate("/librarian");
@@ -97,7 +127,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, register, logout, googleLogin }}>
+    <AuthContext.Provider
+      value={{ currentUser, login, register, logout, googleLogin }}
+    >
       {children}
     </AuthContext.Provider>
   );

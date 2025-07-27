@@ -32,14 +32,22 @@ const Section = ({ title, open, onClick, children }) => (
 );
 
 const AdminDashboard = () => {
-  const [active, setActive] = useState("users"); // ✅ Default section open
   const user = JSON.parse(localStorage.getItem("olmsUser"));
+  const role = user?.role?.trim().toLowerCase() || "";
+
+  const [active, setActive] = useState(null);
+
+  // ✅ Set default open section based on role
+  useEffect(() => {
+    if (role === "admin") setActive("users");
+    else if (role === "librarian") setActive("issued");
+    else if (role === "student") setActive("issued");
+  }, [role]);
 
   const toggle = (section) => {
     setActive(active === section ? null : section);
   };
 
-  // ✅ If no user is logged in, show fallback
   if (!user) {
     return (
       <div className="text-center mt-20">
@@ -56,20 +64,72 @@ const AdminDashboard = () => {
       className="p-6 max-w-6xl mx-auto"
     >
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">
-        Admin Dashboard
+        {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard
       </h1>
 
-      <Section title="Registered Users" open={active === "users"} onClick={() => toggle("users")}>
-        <UserTable />
-      </Section>
+      {role === "admin" && (
+        <>
+          <Section
+            title="Registered Users"
+            open={active === "users"}
+            onClick={() => toggle("users")}
+          >
+            <UserTable />
+          </Section>
 
-      <Section title="Books" open={active === "books"} onClick={() => toggle("books")}>
-        <BookManager />
-      </Section>
+          <Section
+            title="Issued Books"
+            open={active === "issued"}
+            onClick={() => toggle("issued")}
+          >
+            <IssuedBooksTable />
+          </Section>
 
-      <Section title="Issued Books" open={active === "issued"} onClick={() => toggle("issued")}>
-        <IssuedBooksTable />
-      </Section>
+          <Section
+            title="Books"
+            open={active === "books"}
+            onClick={() => toggle("books")}
+          >
+            <BookManager />
+          </Section>
+        </>
+      )}
+
+      {role === "librarian" && (
+        <>
+          <Section
+            title="Issued Books"
+            open={active === "issued"}
+            onClick={() => toggle("issued")}
+          >
+            <IssuedBooksTable />
+          </Section>
+
+          <Section
+            title="Books"
+            open={active === "books"}
+            onClick={() => toggle("books")}
+          >
+            <BookManager />
+          </Section>
+        </>
+      )}
+
+      {role === "student" && (
+        <Section
+          title="Issued Books"
+          open={active === "issued"}
+          onClick={() => toggle("issued")}
+        >
+          <IssuedBooksTable />
+        </Section>
+      )}
+
+      {!["admin", "librarian", "student"].includes(role) && (
+        <div className="text-center mt-10 text-red-500">
+          ⚠️ Unknown role: <strong>{user.role}</strong>. Please contact support.
+        </div>
+      )}
     </motion.div>
   );
 };
