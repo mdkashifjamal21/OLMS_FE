@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UserTable from "../components/UserTable";
 import BookManager from "../components/BookManager";
 import IssuedBooksTable from "../components/IssuedBooksTable";
@@ -8,7 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Section = ({ title, open, onClick, children }) => (
   <div className="mb-6">
-    <Button onClick={onClick} className="flex items-center gap-2 text-lg font-bold">
+    <Button
+      onClick={onClick}
+      className="flex items-center gap-2 text-lg font-bold hover:scale-105 transition"
+    >
       <PlusCircle className="w-5 h-5" />
       {title}
     </Button>
@@ -29,15 +32,32 @@ const Section = ({ title, open, onClick, children }) => (
 );
 
 const AdminDashboard = () => {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState("users"); // ✅ Default section open
+  const user = JSON.parse(localStorage.getItem("olmsUser"));
 
   const toggle = (section) => {
     setActive(active === section ? null : section);
   };
 
+  // ✅ If no user is logged in, show fallback
+  if (!user) {
+    return (
+      <div className="text-center mt-20">
+        <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
+        <p className="mt-2 text-gray-600">Please login to view this page.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6 max-w-6xl mx-auto"
+    >
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">
+        Admin Dashboard
+      </h1>
 
       <Section title="Registered Users" open={active === "users"} onClick={() => toggle("users")}>
         <UserTable />
@@ -50,7 +70,7 @@ const AdminDashboard = () => {
       <Section title="Issued Books" open={active === "issued"} onClick={() => toggle("issued")}>
         <IssuedBooksTable />
       </Section>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,26 +1,23 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios"; // Adjust the import path as necessary
+import {useAuth} from "../context/AuthContext"; // Assuming this is the correct import path
 
 const Login = () => {
-  const { login, googleLogin } = useAuth();
+  const { googleLogin, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('/auth/login', { email, password });
-      console.log('Login success:', response.data);
-      // Save token or redirect
-    } catch (error) {
-      console.error('Login failed:', error.response?.data || error.message);
-    }
-  };
-
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    await login(email, password); // from useAuth
+  } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
+    setError("Invalid credentials.");
+  }
+};
 
   const handleGoogleLogin = async () => {
     try {
@@ -48,7 +45,7 @@ const Login = () => {
           onClick={handleGoogleLogin}
           className="w-full border py-2 rounded flex items-center justify-center gap-2"
         >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="h-5" />
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="h-5" alt="Google" />
           Sign in with Google
         </button>
       </div>

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import axios from "../api/axios"; // Adjust the import path as necessary
+import {useAuth } from "../context/AuthContext"; // Assuming this is the correct import path
 
 const Register = () => {
-  const { register } = useAuth();
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,17 +16,13 @@ const Register = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleRegister = async (e) => {
+ const handleRegister = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.post('/auth/register', {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
-    console.log('Registered:', response.data);
+    await register(formData); // from useAuth
   } catch (error) {
-    console.error('Registration error:', error.response?.data || error.message);
+    console.error("Registration error:", error.response?.data || error.message);
+    setError("Registration failed.");
   }
 };
 

@@ -1,8 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getIssuedBooks } from "../services/bookService";
+import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
 
 const IssuedBooksTable = () => {
+  const { currentUser } = useAuth();
+  const [issuedBooks, setIssuedBooks] = useState([]);
+
+  useEffect(() => {
+    const fetchIssued = async () => {
+      try {
+        const res = await getIssuedBooks();
+        setIssuedBooks(res.data);
+      } catch (err) {
+        console.error("Error fetching issued books:", err);
+      }
+    };
+    fetchIssued();
+  }, []);
+
+  if (!currentUser) {
+    return <p className="text-center text-red-500">Please login to view issued books.</p>;
+  }
+
   return (
-    <div className="overflow-x-auto">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-x-auto">
       <table className="min-w-full border border-gray-200 bg-white rounded-lg shadow">
         <thead className="bg-gray-100 text-gray-700 text-left">
           <tr>
@@ -13,17 +35,17 @@ const IssuedBooksTable = () => {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3].map((i) => (
-            <tr key={i} className="hover:bg-gray-50">
-              <td className="px-4 py-2">Book {i}</td>
-              <td className="px-4 py-2">User {i}</td>
-              <td className="px-4 py-2">2025-07-0{i}</td>
-              <td className="px-4 py-2">2025-07-1{i}</td>
+          {issuedBooks.map((book, i) => (
+            <tr key={i} className="hover:bg-gray-50 transition duration-300">
+              <td className="px-4 py-2">{book.title}</td>
+              <td className="px-4 py-2">{book.issuedTo}</td>
+              <td className="px-4 py-2">{book.issueDate}</td>
+              <td className="px-4 py-2">{book.dueDate}</td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 };
 
