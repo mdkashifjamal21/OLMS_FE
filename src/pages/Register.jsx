@@ -20,7 +20,7 @@ const handleRegister = async (e) => {
   e.preventDefault();
   try {
     const response = await register(formData);
-    alert("Registration successful. Please log in.");
+    alert(response.data.message || "Registration successful. Please log in.");
     navigate("/login");
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);

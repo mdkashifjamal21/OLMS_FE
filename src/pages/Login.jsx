@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(email, password); // ✅ Use AuthContext login
-      // No need to manually navigate — handled inside AuthContext
+      navigate("/dashboard"); // ✅ Redirect to dashboard on success
     } catch (err) {
       console.error("Login failed:", err);
       setError("Invalid credentials");

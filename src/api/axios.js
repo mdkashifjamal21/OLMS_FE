@@ -7,7 +7,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const user = JSON.parse(localStorage.getItem("olmsUser"));
+    // const user = JSON.parse(localStorage.getItem("olmsUser"));
     const token = localStorage.getItem("olmsToken"); // ✅ Correct key
 
 
