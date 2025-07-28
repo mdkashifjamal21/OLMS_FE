@@ -7,6 +7,8 @@ import {
   UserGroupIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import { Link } from "react-router-dom";
+
 
 const HomePage = () => {
   const [images, setImages] = useState([]);
@@ -42,12 +44,13 @@ const HomePage = () => {
             <p className="text-xl mb-8 max-w-xl mx-auto">
               Your all-in-one Online Library Management System – manage books, track borrowing, and more!
             </p>
-            <a
-              href="/register"
+            <Link
+              to="/register"
               className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-100 transition-all duration-300 shadow-lg animate-pulse"
             >
+           
               Get Started
-            </a>
+            </Link>
           </div>
         </section>
 
