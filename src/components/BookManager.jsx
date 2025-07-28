@@ -6,7 +6,12 @@ import { motion } from "framer-motion";
 const BookManager = () => {
   const { currentUser } = useAuth();
   const [books, setBooks] = useState([]);
-  const [newBook, setNewBook] = useState({ title: "", author: "", available: true });
+  const [newBook, setNewBook] = useState({
+    Title: "",
+    Author: "",
+    total_copies: 0,
+    Avaible_copies: 0
+  });
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -26,7 +31,7 @@ const BookManager = () => {
     e.preventDefault();
     try {
       await addBook(newBook);
-      setNewBook({ title: "", author: "", available: true });
+      setNewBook({ Title: "", Author: "", total_copies: 0, Avaible_copies: 0 });
       setMessage("✅ Book added successfully!");
       fetchBooks();
     } catch (err) {
@@ -61,22 +66,40 @@ const BookManager = () => {
         >
           <h2 className="text-xl font-bold text-blue-700">📘 Add New Book</h2>
           {message && <p className="text-sm text-green-600">{message}</p>}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
               placeholder="Book Title"
-              value={newBook.title}
-              onChange={(e) => setNewBook({ ...newBook, title: e.target.value })}
+              value={newBook.Title}
+              onChange={(e) => setNewBook({ ...newBook, Title: e.target.value })}
               className="border px-4 py-2 rounded focus:ring-2 focus:ring-blue-400"
               required
             />
             <input
               type="text"
               placeholder="Author Name"
-              value={newBook.author}
-              onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
+              value={newBook.Author}
+              onChange={(e) => setNewBook({ ...newBook, Author: e.target.value })}
               className="border px-4 py-2 rounded focus:ring-2 focus:ring-blue-400"
               required
+            />
+            <input
+              type="number"
+              placeholder="Total Copies"
+              value={newBook.total_copies}
+              onChange={(e) => setNewBook({ ...newBook, total_copies: parseInt(e.target.value) })}
+              className="border px-4 py-2 rounded focus:ring-2 focus:ring-blue-400"
+              required
+              min={0}
+            />
+            <input
+              type="number"
+              placeholder="Available Copies"
+              value={newBook.Avaible_copies}
+              onChange={(e) => setNewBook({ ...newBook, Avaible_copies: parseInt(e.target.value) })}
+              className="border px-4 py-2 rounded focus:ring-2 focus:ring-blue-400"
+              required
+              min={0}
             />
           </div>
           <button
@@ -98,7 +121,8 @@ const BookManager = () => {
           >
             <h3 className="text-lg font-semibold text-gray-800">{book.Title}</h3>
             <p className="text-sm text-gray-600">Author: {book.Author}</p>
-            <p className="text-sm text-gray-500 mt-1">Available Copies: {book.Avaible_copies}</p>
+            <p className="text-sm text-gray-500">Total Copies: {book.total_copies}</p>
+            <p className="text-sm text-gray-500">Available Copies: {book.Avaible_copies}</p>
             {canManageBooks && (
               <button
                 onClick={() => handleDelete(book.id_books)}

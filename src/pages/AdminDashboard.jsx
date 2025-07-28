@@ -102,7 +102,7 @@ const AdminDashboard = () => {
             open={active === "issued"}
             onClick={() => toggle("issued")}
           >
-            <IssuedBooksTable />
+            <BookManager />
           </Section>
 
           <Section
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
             open={active === "books"}
             onClick={() => toggle("books")}
           >
-            <BookManager />
+            <IssuedBooksTable />
           </Section>
         </>
       )}

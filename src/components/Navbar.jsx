@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
+  const role = currentUser?.role?.trim().toLowerCase() || "";
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -33,7 +34,7 @@ const Navbar = () => {
           {currentUser && (
             <>
               <Link to="/dashboard" className="hover:text-blue-400">Dashboard</Link>
-              <Link to="/admin-dashboard" className="hover:text-blue-400">Admin Dashboard</Link>
+              <Link to="/admin-dashboard" className="hover:text-blue-400"> {role.charAt(0).toUpperCase() + role.slice(1)} Dashboard</Link>
               <div className="flex items-center gap-2 ml-4">
                 {currentUser.photoURL && (
                   <img src={currentUser.photoURL} alt="User" className="h-8 w-8 rounded-full" />
