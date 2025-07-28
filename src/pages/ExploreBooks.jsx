@@ -69,7 +69,7 @@ const ExploreBooks = () => {
           <div className="mb-4">
               <img
                 src={images[index % images.length]} // Cycle through Pexels images
-                alt={`Library image ${index}`}
+              
                 className="w-full h-48 object-cover rounded"
               />
             </div>
